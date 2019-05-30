@@ -134,7 +134,7 @@ func NewLDAPConfig() LDAPConfig {
 	conf.Protocol = "tcp"
 	conf.UseTLS = false
 	conf.UseStartTLS = false
-	conf.TLSConfig = tls.Config{}
+	conf.TLSConfig = tls.Config{InsecureSkipVerify: true}
 
 	return conf
 

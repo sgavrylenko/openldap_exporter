@@ -18,6 +18,7 @@ var (
 	ldapPass        = flag.String("ldapPass", "", "OpenLDAP bind password (optional)")
 	interval        = flag.Duration("interval", 30*time.Second, "Scrape interval")
 	version         = flag.Bool("version", false, "Show version and exit")
+	skipVerifyTLS   = flag.Bool("skipVerifyTLS", false, "Skip TLS certs verify, default is True (optional)")
 )
 
 func main() {
@@ -29,6 +30,8 @@ func main() {
 	}
 
 	config := exporter.NewLDAPConfig()
+	promConfig := exporter.NewServerConfig()
+	promConfig.Address = *promAddr
 
 	/** Parse ldap address **/
 	err := config.ParseAddr(*ldapAddr)
@@ -55,10 +58,14 @@ func main() {
 		config.UseStartTLS = true
 	}
 
-	log.Println("Starting prometheus HTTP metrics server on", *promAddr)
-	go exporter.StartMetricsServer(*promAddr)
+	if *skipVerifyTLS {
+		config.TLSConfig.InsecureSkipVerify = true
+	}
 
-	log.Println("Starting OpenLDAP scraper for", *ldapAddr)
+	log.Println("Starting prometheus HTTP metrics server on", *promAddr)
+	go exporter.StartMetricsServer(promConfig)
+
+	log.Printf("Starting OpenLDAP scraper for %s, StartTLS is %v, SkipTLSVerify is %v", *ldapAddr, config.UseStartTLS, config.TLSConfig.InsecureSkipVerify)
 	for range time.Tick(*interval) {
 		exporter.ScrapeMetrics(&config)
 	}

@@ -84,7 +84,7 @@ Usage of ./openldap_exporter-linux:
     	OpenLDAP bind username (optional)
   -ldapPass string
     	OpenLDAP bind password (optional)
-  -ldapStartTLS
+  -ldapUseStartTLS
     	Use start TLS (optional)
   -ldapCACrt string
     	Path to CA certificate for LDAPS (optional)
@@ -96,6 +96,8 @@ Usage of ./openldap_exporter-linux:
         Path to PEM Certificate Key file to run metrics server in https mode (optional, required if Crt is used)         
   -version
     	Show version and exit
+  -skipVerifyTLS
+  		Skip verify certificate. Default is True (optional)
 ```
 
 `-ldapAddr` supports `ldaps://` and `ldap://` scheme uri's. (defaults to ldap:// scheme)  
